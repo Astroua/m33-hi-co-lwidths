@@ -5,7 +5,7 @@ HI data products are available [here](https://doi.org/10.11570/18.0003). Use of 
 
 The CO data is hosted by IRAM [here](http://www.iram-institute.org/EN/content-page-329-7-158-240-329-0.html). The link refers to the papers that should be cited when using these data.
 
-Scripts to reproduce the HI reduction and imaging can be found [here](https://github.com/e-koch/VLA_Lband).
+Scripts to reproduce the HI reduction and imaging can be found [here](https://github.com/e-koch/VLA_Lband). The repository also contains the [scripts to smooth the CO to match the HI](https://github.com/e-koch/VLA_Lband/tree/master/ancillary_data/IRAM30m_CO21/14B-088), which is the version used throughout most of this paper.
 
 These analyses scripts are setup to run from this directory and rely on paths to the data defined in `paths.py`. The disc parameters (inclination, position angle, etc) are required for some script and are loaded through the `galaxy_params.py` script. The file that is loaded in this script is available from the HI data link above (`DR1/HI/rotation_curve/rad.out.params.csv`).
 
