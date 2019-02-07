@@ -31,9 +31,11 @@ radius = gal.radius(header=moment0.header)
 
 beam = Beam.from_fits_header(moment0.header)
 
+zoom_slice = (slice(140, -140), slice(160, -160))
+
 # Convert to K km s and correct for disk inclination.
 moment0_Kkm_s = beam.jtok(hi_freq).value * (moment0.data / 1000.) * cosinc
-moment0_coldens = moment0_Kkm_s * hi_coldens_Kkms.value
+moment0_coldens = moment0_Kkm_s[zoom_slice] * hi_coldens_Kkms.value
 
 pixscale = np.sqrt(proj_plane_pixel_area(moment0_wcs))
 
@@ -46,6 +48,7 @@ twocolumn_figure(fig_ratio=0.95, font_scale=1.2)
 
 ax = plt.subplot(111, projection=moment0_wcs)
 im = ax.imshow(moment0_coldens,
+               cmap='binary',
                origin='lower',
                interpolation='nearest',
                alpha=0.85,
@@ -66,11 +69,11 @@ ax.plot([200, 200], [200 - length_pix / 2., 200 + length_pix / 2.], 'k',
 ax.text(80, 200,
         "1 kpc", color='k', va='center')
 
-ax.contour(np.isfinite(co_moment0.data).astype(float), levels=[0.5],
-           colors=sb.color_palette('viridis')[:1], alpha=0.45)
-ax.contour(co_moment0.data,
+ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float), levels=[0.5],
+           colors=sb.color_palette('viridis')[:1], alpha=0.75)
+ax.contour(co_moment0.data[zoom_slice],
            levels=[900, 1400, 1900, 2400],
-           cmap='viridis', alpha=0.45)
+           cmap='viridis', alpha=0.75)
 
 # CO levels at: 877,  1370,  1862,  2354 K m/s
 # <Quantity [  5.8759,  9.179 , 12.4754, 15.7718] solMass / pc2>
@@ -85,6 +88,7 @@ plt.close()
 
 ax = plt.subplot(111, projection=moment0_wcs)
 im = ax.imshow(moment0_coldens,
+               cmap='binary',
                origin='lower',
                interpolation='nearest',
                alpha=0.85,
@@ -98,17 +102,18 @@ lon.set_major_formatter('hh:mm')
 # ax.add_patch(beam.ellipse_to_plot(int(0.05 * moment0.shape[0]),
 #                                   int(0.05 * moment0.shape[1]), pixscale))
 
-ax.plot([200, 200], [200 - length_pix / 2., 200 + length_pix / 2.], 'k',
+ax.plot([200, 200], [150 - length_pix / 2., 150 + length_pix / 2.], 'k',
         linewidth=2)
-ax.text(80, 200,
+ax.text(50, 150,
         "1 kpc", color='k', va='center')
 
-ax.contour(np.isfinite(co_moment0.data).astype(float), levels=[0.5],
-           colors=sb.color_palette('viridis')[:1], alpha=0.45)
-ax.contour(co_moment0.data,
+ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float),
+           levels=[0.5],
+           colors=sb.color_palette('viridis')[:1], alpha=0.75)
+ax.contour(co_moment0.data[zoom_slice],
            levels=[900, 1400, 1900, 2400],
-           cmap='viridis', alpha=0.45)
-ax.contour(np.isfinite(co_noise_map.data),
+           cmap='viridis', alpha=0.75)
+ax.contour(np.isfinite(co_noise_map.data[zoom_slice]),
            levels=[0.5], colors=sb.color_palette()[::-1],
            linewidths=[3])
 
@@ -124,6 +129,7 @@ plt.close()
 
 ax = plt.subplot(111, projection=moment0_wcs)
 im = ax.imshow(moment0_coldens,
+               cmap='binary',
                origin='lower',
                interpolation='nearest',
                alpha=0.85,
@@ -137,20 +143,23 @@ lon.set_major_formatter('hh:mm')
 # ax.add_patch(beam.ellipse_to_plot(int(0.05 * moment0.shape[0]),
 #                                   int(0.05 * moment0.shape[1]), pixscale))
 
-ax.plot([200, 200], [200 - length_pix / 2., 200 + length_pix / 2.], 'k',
-        linewidth=2)
-ax.text(80, 200,
-        "1 kpc", color='k', va='center')
 
-ax.contour(radius < 7 * u.kpc, levels=[0.5], colors=[sb.color_palette()[4]],
+ax.contour(radius[zoom_slice] < 7 * u.kpc, levels=[0.5],
+           colors=[sb.color_palette('colorblind')[-2]],
            linewidths=[4], alpha=0.5, linestyles='--')
 
-ax.contour(np.isfinite(co_moment0.data).astype(float), levels=[0.5],
-           colors=sb.color_palette('viridis')[:1], alpha=0.45)
-ax.contour(co_moment0.data,
+ax.plot([200, 200], [150 - length_pix / 2., 150 + length_pix / 2.], 'k',
+        linewidth=2)
+ax.text(50, 150,
+        "1 kpc", color='k', va='center')
+
+ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float),
+           levels=[0.5],
+           colors=sb.color_palette('viridis')[:1], alpha=0.75)
+ax.contour(co_moment0.data[zoom_slice],
            levels=[900, 1400, 1900, 2400],
-           cmap='viridis', alpha=0.45)
-ax.contour(np.isfinite(co_noise_map.data),
+           cmap='viridis', alpha=0.75)
+ax.contour(np.isfinite(co_noise_map.data[zoom_slice]),
            levels=[0.5], colors=sb.color_palette()[::-1],
            linewidths=[3])
 
