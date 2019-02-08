@@ -64,9 +64,9 @@ lon.set_major_formatter('hh:mm')
 
 length = (1. * u.kpc / (840 * u.kpc)).to(u.deg, u.dimensionless_angles())
 length_pix = length.value / np.abs(moment0.header['CDELT2'])
-ax.plot([200, 200], [200 - length_pix / 2., 200 + length_pix / 2.], 'k',
+ax.plot([200, 200], [150 - length_pix / 2., 150 + length_pix / 2.], 'k',
         linewidth=2)
-ax.text(80, 200,
+ax.text(90, 150,
         "1 kpc", color='k', va='center')
 
 ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float), levels=[0.5],
@@ -104,7 +104,7 @@ lon.set_major_formatter('hh:mm')
 
 ax.plot([200, 200], [150 - length_pix / 2., 150 + length_pix / 2.], 'k',
         linewidth=2)
-ax.text(50, 150,
+ax.text(90, 150,
         "1 kpc", color='k', va='center')
 
 ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float),
@@ -150,7 +150,7 @@ ax.contour(radius[zoom_slice] < 7 * u.kpc, levels=[0.5],
 
 ax.plot([200, 200], [150 - length_pix / 2., 150 + length_pix / 2.], 'k',
         linewidth=2)
-ax.text(50, 150,
+ax.text(90, 150,
         "1 kpc", color='k', va='center')
 
 ax.contour(np.isfinite(co_moment0.data[zoom_slice]).astype(float),
