@@ -10,7 +10,7 @@ from astropy.io import fits
 from astropy.table import Table
 import numpy as np
 import matplotlib.pyplot as plt
-from corner import hist2d
+from corner import hist2d, corner
 import seaborn as sb
 import emcee
 from scipy.stats import binned_statistic
@@ -92,8 +92,8 @@ plt.ylabel("{\sc HI} Integrated Intensity\nin FWHM fit window\n(K km s$^{-1}$)")
 
 plt.tight_layout()
 
-plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.png"))
-plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.pdf"))
+# plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.png"))
+# plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.pdf"))
 plt.close()
 
 
@@ -263,6 +263,8 @@ plt.grid()
 
 plt.tight_layout()
 
+print(argh)
+
 plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit.png"))
 plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit.pdf"))
 plt.close()
@@ -275,6 +277,45 @@ print("Ratio Slope: {0} {1}".format(slope_ratio, slope_ratio_ci))
 
 print("Added stddev: {0} {1}".format(add_stddev_ratio, add_stddev_ratio_ci))
 # Added stddev: 520.947992994 [ 514.89901222  527.00225878]
+
+# Make a corner plot version
+
+twocolumn_figure()
+# hist2d(tab['sigma_HI'][good_pts] / 1000.,
+#        np.array(tab['sigma_CO'])[good_pts] / 1000., bins=13,
+#        data_kwargs={"alpha": 0.5})
+
+data = np.vstack([tab['sigma_HI'][good_pts] / 1000.,
+                  tab['sigma_CO'][good_pts] / 1000.])
+fig = corner(data.T, bins=13, data_kwargs={'alpha': 0.5},
+             labels=[r"$\sigma_{\rm HI}$ (km/s)",
+                     r"$\sigma_{\rm CO}$ (km/s)"],
+             quantiles=[0.15, 0.5, 0.85])
+
+axs = fig.get_axes()
+
+axs[2].plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
+            '--', color=sb.color_palette()[2], linewidth=3,
+            label='Ratio Fit')
+
+
+axs[2].plot([4, 12], [4, 12], '-.', linewidth=3, alpha=0.8,
+            color=sb.color_palette()[3],
+            label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
+
+axs[2].axhline(2.6, color=sb.color_palette()[4], linestyle=':',
+               alpha=0.8, linewidth=3)
+
+axs[2].set_ylim([0.5, 8])
+axs[2].legend(frameon=True, loc='lower right')
+axs[2].grid()
+
+# plt.tight_layout()
+plt.subplots_adjust(hspace=0.03, wspace=0.03)
+
+plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit_cornerplot.png"))
+plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit_cornerplot.pdf"))
+plt.close()
 
 # What does this relation look like for line widths from the second moment
 co_lwidth = Projection.from_hdu(fits.open(iram_co21_14B088_data_path("m33.co21_iram.14B-088_HI.lwidth.fits"))[0])
@@ -815,3 +856,17 @@ print("Median Gas SD from fits: {}".format(np.median((tab['coldens_CO_gauss'] +
                                                       tab['coldens_HI_gauss'])[good_pts])))
 # Median Gas SD from moments: 20.3851612418
 # Median Gas SD from fits: 20.2102707871
+
+# Check out the correlation coefficients between some of the parameters:
+
+stats.kendalltau(tab['amp_HI'][good_pts], tab['amp_CO'][good_pts])
+# KendalltauResult(correlation=0.10053586667569481, pvalue=1.6329879610592043e-71)
+
+stats.pearsonr(tab['amp_HI'][good_pts], tab['amp_CO'][good_pts])
+# (0.1442614926575947, 2.8098460913653696e-66)
+
+stats.kendalltau(tab['sigma_HI'][good_pts], tab['sigma_CO'][good_pts])
+# KendalltauResult(correlation=0.38086628617507584, pvalue=0.0)
+
+stats.kendalltau(tab['mean_HI'][good_pts], tab['mean_CO'][good_pts])
+# KendalltauResult(correlation=0.9688028081337542, pvalue=0.0)
