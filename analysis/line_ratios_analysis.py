@@ -92,8 +92,8 @@ plt.ylabel("{\sc HI} Integrated Intensity\nin FWHM fit window\n(K km s$^{-1}$)")
 
 plt.tight_layout()
 
-# plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.png"))
-# plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.pdf"))
+plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.png"))
+plt.savefig(osjoin(fig_path, "coldens_fit_vs_fwhm_check.pdf"))
 plt.close()
 
 
@@ -263,8 +263,6 @@ plt.grid()
 
 plt.tight_layout()
 
-print(argh)
-
 plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit.png"))
 plt.savefig(osjoin(fig_path, "sigma_HI_vs_H2_w_fit.pdf"))
 plt.close()
@@ -294,21 +292,28 @@ fig = corner(data.T, bins=13, data_kwargs={'alpha': 0.5},
 
 axs = fig.get_axes()
 
-axs[2].plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
-            '--', color=sb.color_palette()[2], linewidth=3,
-            label='Ratio Fit')
+line1 = axs[2].plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
+                    '--', color=sb.color_palette()[2], linewidth=3,
+                    label='Ratio Fit')
 
 
-axs[2].plot([4, 12], [4, 12], '-.', linewidth=3, alpha=0.8,
-            color=sb.color_palette()[3],
-            label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
+line2 = axs[2].plot([4, 12], [4, 12], '-.', linewidth=3, alpha=0.8,
+                    color=sb.color_palette()[3],
+                    label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
 
 axs[2].axhline(2.6, color=sb.color_palette()[4], linestyle=':',
                alpha=0.8, linewidth=3)
 
-axs[2].set_ylim([0.5, 8])
-axs[2].legend(frameon=True, loc='lower right')
+axs[2].set_ylim([2.0, 8])
+# axs[2].legend(frameon=True, loc='lower right')
 axs[2].grid()
+
+handles, labels = axs[2].get_legend_handles_labels()
+fig.legend(handles,
+           (r'Ratio Fit: $\sigma_{\rm CO} = 0.56\, \sigma_{\rm HI}$',
+            r'$\sigma_{\rm CO} = \sigma_{\rm HI}$'),
+           frameon=True, loc=(0.56, 0.6),)
+
 
 # plt.tight_layout()
 plt.subplots_adjust(hspace=0.03, wspace=0.03)
