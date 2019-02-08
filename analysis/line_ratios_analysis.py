@@ -237,7 +237,7 @@ plt.ylabel(r"$\sigma_{\rm CO}$ (km/s)")
 #                  facecolor=sb.color_palette()[0],
 #                  alpha=0.5)
 plt.plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
-         '--', color=sb.color_palette()[1], linewidth=3,
+         '--', color=sb.color_palette()[2], linewidth=3,
          label='Ratio Fit')
 
 # Shade in the region from the added variance
@@ -250,11 +250,11 @@ plt.plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
 #                  facecolor=sb.color_palette()[1],
 #                  alpha=0.35)
 
-plt.plot([4, 12], [4, 12], '-.', linewidth=3, alpha=0.8,
-         color=sb.color_palette()[2],
+plt.plot([4, 12], [4, 12], '-', linewidth=3, alpha=0.8,
+         color=sb.color_palette()[3],
          label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
 
-plt.axhline(2.6, color=sb.color_palette()[3], linestyle=':',
+plt.axhline(2.6, color=sb.color_palette()[4], linestyle=':',
             alpha=0.5, linewidth=3)
 
 plt.ylim([0.5, 8])
@@ -297,7 +297,7 @@ line1 = axs[2].plot([4, 12], [4. * slope_ratio, 12. * slope_ratio],
                     label='Ratio Fit')
 
 
-line2 = axs[2].plot([4, 12], [4, 12], '-.', linewidth=3, alpha=0.8,
+line2 = axs[2].plot([4, 12], [4, 12], '-', linewidth=3, alpha=0.8,
                     color=sb.color_palette()[3],
                     label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
 
