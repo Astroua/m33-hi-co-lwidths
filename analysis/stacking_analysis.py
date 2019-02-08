@@ -672,6 +672,83 @@ fig.savefig(osjoin(figure_folder, "total_profile_radial_widths_HI_CO21.png"))
 
 p.close()
 
+# Does the line width decrease with radius?
+# Fit a line and see if the slope is significantly non-zero
+import statsmodels.api as sm
+
+# HI
+# Exclude line widths inside 1 kpc. Ensure no contribution from
+# beam smearing (though it shouldn't be important at ~20'')
+x = sm.add_constant(bin_cents[2:])
+y = hi_params['peaksub_sigma'][2:]
+yerr = np.max(np.array([hi_params['peaksub_sigma_low_lim'][2:],
+                        hi_params['peaksub_sigma_up_lim'][2:]]),
+              axis=0)
+model_HI = sm.WLS(y, x, missing='drop', weights=1 / yerr**2)
+
+fit_mod_HI = model_HI.fit(cov_type='HC3')
+
+# CO
+x = sm.add_constant(bin_cents[2:])
+y = co_params['peaksub_sigma'][2:]
+yerr = np.max(np.array([co_params['peaksub_sigma_low_lim'][2:],
+                        co_params['peaksub_sigma_up_lim'][2:]]),
+              axis=0)
+model_CO = sm.WLS(y, x, missing='drop', weights=1 / yerr**2)
+
+fit_mod_CO = model_CO.fit(cov_type='HC3')
+
+# HI: -0.1445 +/- 0.071
+# CO: -0.1633 +/- 0.052
+# But these are horrid fits to a line...
+
+# Try resampling to get better errors.
+slopes_hi = []
+
+for i in range(1000):
+
+    x = sm.add_constant(bin_cents[2:])
+    yerr = np.max(np.array([hi_params['peaksub_sigma_low_lim'][2:],
+                            hi_params['peaksub_sigma_up_lim'][2:]]),
+                  axis=0)
+
+    y = np.random.normal(hi_params['peaksub_sigma'][2:], yerr)
+
+    model_HI_boot = sm.WLS(y, x, missing='drop', weights=1 / yerr**2)
+
+    fit_mod_HI_boot = model_HI_boot.fit(cov_type='HC3')
+
+    slopes_hi.append(fit_mod_HI_boot.params[1])
+
+slopes_co = []
+
+for i in range(1000):
+
+    x = sm.add_constant(bin_cents[2:])
+    yerr = np.max(np.array([co_params['peaksub_sigma_low_lim'][2:],
+                            co_params['peaksub_sigma_up_lim'][2:]]),
+                  axis=0)
+
+    y = np.random.normal(co_params['peaksub_sigma'][2:], yerr)
+
+    model_CO_boot = sm.WLS(y, x, missing='drop', weights=1 / yerr**2)
+
+    fit_mod_CO_boot = model_CO_boot.fit(cov_type='HC3')
+
+    slopes_co.append(fit_mod_CO_boot.params[1])
+
+# This takes the errors into account better.
+
+print(np.percentile(slopes_hi, [15, 50, 85]))
+# [-0.1589233  -0.14487714 -0.13141935]
+# So -0.14 \pm 0.01
+print(np.percentile(slopes_co, [15, 50, 85]))
+# [-0.32569444 -0.16201996  0.01523584]
+# So -0.16 \pm 0.16
+
+# The HI decline is significant but the CO is not
+# b/c of the large uncertainties
+
 # Peak velocity only
 onecolumn_figure()
 
