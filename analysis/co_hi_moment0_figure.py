@@ -51,10 +51,10 @@ im = ax.imshow(moment0_coldens,
                cmap='binary',
                origin='lower',
                interpolation='nearest',
-               alpha=0.85,
-               norm=ImageNormalize(vmin=-0.001,
-                                   vmax=np.nanmax(moment0_coldens),
-                                   stretch=AsinhStretch()))
+               alpha=0.85,)
+               # norm=ImageNormalize(vmin=-0.001,
+               #                     vmax=np.nanmax(moment0_coldens),
+               #                     stretch=AsinhStretch()))
 ax.set_ylabel("DEC (J2000)")
 ax.set_xlabel("RA (J2000)")
 lon = ax.coords[0]
@@ -91,10 +91,10 @@ im = ax.imshow(moment0_coldens,
                cmap='binary',
                origin='lower',
                interpolation='nearest',
-               alpha=0.85,
-               norm=ImageNormalize(vmin=-0.001,
-                                   vmax=np.nanmax(moment0_coldens),
-                                   stretch=AsinhStretch()))
+               alpha=0.85,)
+               # norm=ImageNormalize(vmin=-0.001,
+               #                     vmax=np.nanmax(moment0_coldens),
+               #                     stretch=AsinhStretch()))
 ax.set_ylabel("DEC (J2000)")
 ax.set_xlabel("RA (J2000)")
 lon = ax.coords[0]
@@ -132,10 +132,10 @@ im = ax.imshow(moment0_coldens,
                cmap='binary',
                origin='lower',
                interpolation='nearest',
-               alpha=0.85,
-               norm=ImageNormalize(vmin=-0.001,
-                                   vmax=np.nanmax(moment0_coldens),
-                                   stretch=AsinhStretch()))
+               alpha=0.85,)
+               # norm=ImageNormalize(vmin=-0.001,
+               #                     vmax=np.nanmax(moment0_coldens),
+               #                     stretch=AsinhStretch()))
 ax.set_ylabel("DEC (J2000)")
 ax.set_xlabel("RA (J2000)")
 lon = ax.coords[0]
