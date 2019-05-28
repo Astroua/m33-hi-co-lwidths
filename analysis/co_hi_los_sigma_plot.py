@@ -24,7 +24,8 @@ from paths import (fourteenB_HI_data_wGBT_path, fourteenB_wGBT_HI_file_dict,
                    allfigs_path,
                    iram_co21_14B088_data_path)
 from constants import (hi_freq, hi_coldens_Kkms)
-from plotting_styles import default_figure, onecolumn_Npanel_figure
+from plotting_styles import (default_figure, onecolumn_Npanel_figure,
+                             onecolumn_figure)
 from galaxy_params import gal_feath as gal
 
 default_figure()
@@ -33,7 +34,7 @@ fig_path = allfigs_path("co_vs_hi")
 if not os.path.exists(fig_path):
     os.mkdir(fig_path)
 
-col_pal = sb.color_palette()
+col_pal = sb.color_palette('colorblind')
 
 cosinc = np.cos(gal.inclination.to(u.rad)).value
 
@@ -168,4 +169,113 @@ ax2.scatter(tab['sigma_HI'][reg3_mask] / 1000.,
 
 plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_w_example_regions.png"))
 plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_w_example_regions.pdf"))
+plt.close()
+
+
+# Make an equal axis relation plot
+# Note that I changed the colours of the region in these plots.
+
+onecolumn_figure()
+fig = plt.figure()
+
+ax = plt.subplot(111)
+
+hist2d(tab['sigma_HI'][good_pts] / 1000.,
+       np.array(tab['sigma_CO'][good_pts]) / 1000.,
+       bins=10,
+       data_kwargs={"alpha": 0.5},
+       ax=ax, range=[(2, 12), (2, 12)])
+
+ax.scatter(tab['sigma_HI'][reg1_mask] / 1000.,
+           tab['sigma_CO'][reg1_mask] / 1000., color='royalblue',
+           marker='D')
+ax.scatter(tab['sigma_HI'][reg2_mask] / 1000.,
+           tab['sigma_CO'][reg2_mask] / 1000., color='lightcoral',
+           marker='o')
+ax.scatter(tab['sigma_HI'][reg3_mask] / 1000.,
+           tab['sigma_CO'][reg3_mask] / 1000., color='gold',
+           marker='s')
+
+slope_ratio = 0.56
+ax.plot([2, 12], [2. * slope_ratio, 12. * slope_ratio],
+        '--', color=sb.color_palette()[2], linewidth=3,
+        label=r'Ratio Fit: $\sigma_{\rm CO} = 0.56\, \sigma_{\rm HI}$')
+
+ax.plot([2, 12], [2, 12], '-', linewidth=3, alpha=0.8,
+        color=sb.color_palette()[3],
+        label=r'$\sigma_{\rm CO} = \sigma_{\rm HI}$')
+
+ax.axhline(2.6, color=sb.color_palette()[4], linestyle=':',
+           alpha=0.5, linewidth=3)
+ax.axhline(8.0, color=sb.color_palette()[4], linestyle=':',
+           alpha=0.5, linewidth=3)
+
+ax.set_xlabel(r"$\sigma_{\rm HI}$ (km/s)")
+ax.set_ylabel(r"$\sigma_{\rm CO}$ (km/s)")
+
+ax.grid()
+
+# ax.legend(frameon=True)
+
+plt.tight_layout()
+
+plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_equalaxes_regionhighlights.png"))
+plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_equalaxes_regionhighlights.pdf"))
+plt.close()
+
+# And a single region figure too.
+
+fig = plt.figure()
+
+# ax = fig.add_axes((0.15, 0.5, 0.8, 0.45), projection=mom0_proj[img_slice].wcs)
+ax = plt.subplot(111)  # , projection=mom0_proj[img_slice].wcs)
+cmap = plt.cm.gray_r
+cmap.set_bad(color='w')
+im = ax.imshow(moment0_coldens[img_slice],
+               cmap=cmap,
+               origin='lower',
+               interpolation='nearest',
+               alpha=0.85,
+               vmax=np.nanpercentile(moment0_coldens, 99.9))
+               # norm=ImageNormalize(vmin=-0.001,
+               #                     vmax=np.nanmax(moment0_coldens),
+               #                     stretch=AsinhStretch()))
+
+# lon = ax.coords[0]
+# lon.set_major_formatter('hh:mm:ss')
+
+ax.contour(np.isfinite(co_moment0.data[img_slice]).astype(float), levels=[0.5],
+           colors=sb.color_palette('viridis')[:1],
+           alpha=0.5)
+ax.contour(co_moment0.data[img_slice],
+           levels=np.linspace(np.nanpercentile(co_moment0.data, 70),
+                              np.nanpercentile(co_moment0.data, 95), 4),
+           cmap='viridis', alpha=0.5)
+
+reg1 = ((111, 31), (143, 62))
+reg2 = ((142, 82), (157, 99))
+reg3 = ((90, 132), (138, 170))
+
+ax.add_patch(patches.Rectangle(reg1[0], reg1[1][0] - reg1[0][0],
+                               reg1[1][1] - reg1[0][1], fill=True,
+                               facecolor='royalblue', linewidth=1,
+                               edgecolor='k'))
+
+ax.add_patch(patches.Rectangle(reg2[0], reg2[1][0] - reg2[0][0],
+                               reg2[1][1] - reg2[0][1], fill=True,
+                               facecolor='lightcoral', linewidth=1,
+                               edgecolor='k'))
+
+ax.add_patch(patches.Rectangle(reg3[0], reg3[1][0] - reg3[0][0],
+                               reg3[1][1] - reg3[0][1], fill=True,
+                               facecolor='gold', linewidth=1,
+                               edgecolor='k'))
+
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+
+plt.tight_layout()
+
+plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_equalaxes_regionhighlights_regionmap.png"))
+plt.savefig(os.path.join(fig_path, "sigma_HI_vs_H2_equalaxes_regionhighlights_regionmap.pdf"))
 plt.close()
